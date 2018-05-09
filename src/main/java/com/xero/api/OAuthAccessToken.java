@@ -52,7 +52,7 @@ public class OAuthAccessToken {
     this.connectTimeout = config.getConnectTimeout() * 1000;
 	this.readTimeout = config.getReadTimeout() * 1000;
 
-    	httpclient = new XeroHttpContext(config).getHttpClient();
+	httpclient = new XeroHttpContext(config).getHttpClient();
 
     return this;
   }
@@ -81,7 +81,13 @@ public class OAuthAccessToken {
 		  HttpHost proxy = new HttpHost(config.getProxyHost(), port, config.getProxyHttpsEnabled() ? "https" : "http");
 		  requestConfig.setProxy(proxy);
 	  }
-	  this.createParameters().intercept(httpget,requestUrl);
+
+	  if (tempToken == null) {
+          createRefreshParameters().intercept(httpget, requestUrl);
+      } else {
+          createParameters().intercept(httpget, requestUrl);
+      }
+
 	  httpget.setConfig(requestConfig.build());
 	
 	  try {
